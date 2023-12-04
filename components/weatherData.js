@@ -33,6 +33,10 @@ const WeatherData = (props) => {
   const [icon, setIcon] = useState();
   const [backgroundImg, setBackgroundImg] = useState("");
 
+  const convertFahrenheitToCelsius = (fahrenheit) => {
+    return ((fahrenheit - 32) * 5) / 9;
+  };
+
   async function getWeatherData(cityName) {
     setLoading(true);
     const API = `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${API_KEY}`;
@@ -40,7 +44,11 @@ const WeatherData = (props) => {
     let res = await fetch(API);
     if (res.status == 200) {
       res = await res.json();
-      setWeatherData(res);
+      const modifiedtempdata = {
+        ...res,
+        main: { ...res.main, temp: convertFahrenheitToCelsius(res.main.temp) },
+      };
+      setWeatherData(modifiedtempdata);
     } else {
       setWeatherData(null);
     }
@@ -124,7 +132,7 @@ const WeatherData = (props) => {
               Humidity: {weatherData.main.humidity}
             </Text>
             <Text style={{ color: "white", fontSize: 18 }}>
-              Temperature: {weatherData.main.temp}{" "}
+              Temperature: {weatherData.main.temp.toFixed(2)}°C
             </Text>
           </View>
 
